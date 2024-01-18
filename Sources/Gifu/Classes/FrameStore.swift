@@ -164,10 +164,14 @@ private extension FrameStore {
     let scaledImage: UIImage?
 
     if shouldResizeFrames {
-      switch self.contentMode {
-      case .scaleAspectFit: scaledImage = image.constrained(by: size)
-      case .scaleAspectFill: scaledImage = image.filling(size: size)
-      default: scaledImage = size != .zero ? image.resized(to: size) : nil
+      if size != .zero {
+        switch self.contentMode {
+        case .scaleAspectFit: scaledImage = image.constrained(by: size)
+        case .scaleAspectFill: scaledImage = image.filling(size: size)
+        default: scaledImage = image.resized(to: size)
+        }
+      } else {
+        scaledImage = nil
       }
     } else {
       scaledImage = image
