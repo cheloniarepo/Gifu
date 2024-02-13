@@ -7,11 +7,7 @@ extension UIImage {
   /// - parameter size: The new size of the image.
   /// - returns: A new resized image instance.
   func resized(to size: CGSize) -> UIImage {
-    UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-    self.draw(in: CGRect(origin: CGPoint.zero, size: size))
-    let newImage = UIGraphicsGetImageFromCurrentImageContext()
-    UIGraphicsEndImageContext()
-    return newImage ?? self
+    shrinkImage(max: max(size.width, size.height))
   }
 
   /// Resizes an image instance to fit inside a constraining size while keeping the aspect ratio.
@@ -48,5 +44,29 @@ extension UIImage {
   class func size(withImageData data: Data) -> CGSize? {
     return UIImage(data: data)?.size
   }
+}
+
+extension UIImage {
+
+  func shrinkImage(max: CGFloat) -> UIImage {
+    let widthInPixel = size.width * scale
+    let heightInPixel = size.height * scale
+    if widthInPixel > max || heightInPixel > max {
+      if widthInPixel > heightInPixel {
+        return resizeImage(CGSize(width: max, height: max / size.width * size.height))
+      } else {
+        return resizeImage(CGSize(width: max / size.height * size.width, height: max))
+      }
+    } else {
+      return self
+    }
+  }
+
+  func resizeImage(_ size: CGSize) -> UIImage {
+    UIGraphicsImageRenderer(size: size).image { _ in
+      draw(in: CGRect(origin: .zero, size: size))
+    }
+  }
+
 }
 #endif
