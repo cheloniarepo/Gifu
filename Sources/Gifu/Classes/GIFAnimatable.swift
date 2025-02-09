@@ -1,4 +1,3 @@
-#if os(iOS) || os(tvOS)
 import Foundation
 import UIKit
 
@@ -134,7 +133,7 @@ extension GIFAnimatable {
   public func prepareForAnimation(withGIFData imageData: Data,
                                   loopCount: Int = 0,
                                   completionHandler: (() -> Void)? = nil) {
-    if var imageContainer = self as? ImageContainer {
+    if var imageContainer = self as? any ImageContainer {
       imageContainer.image = UIImage(data: imageData)
     }
 
@@ -196,13 +195,21 @@ extension GIFAnimatable {
   /// Sets the number of frames that should be buffered. Default is 50. A high number will result in more memory usage and less CPU load, and vice versa.
   ///
   /// - parameter frames: The number of frames to buffer.
+  @available(*, deprecated, message: "Use setFrameBufferSize instead.")
   public func setFrameBufferCount(_ frames: Int) {
-    animator?.frameBufferCount = frames
+    setFrameBufferSize(frames)
+  }
+
+  /// Sets the number of frames that should be buffered. Default is 50. A high number will result in more memory usage and less CPU load, and vice versa.
+  ///
+  /// - parameter frames: The number of frames to buffer.
+  public func setFrameBufferSize(_ frames: Int) {
+    animator?.frameBufferSize = frames
   }
 
   /// Updates the image with a new frame if necessary.
   public func updateImageIfNeeded() {
-    if var imageContainer = self as? ImageContainer {
+    if var imageContainer = self as? any ImageContainer {
       let container = imageContainer
       imageContainer.image = activeFrame ?? container.image
     } else {
@@ -217,4 +224,3 @@ extension GIFAnimatable {
     layer.setNeedsDisplay()
   }
 }
-#endif
